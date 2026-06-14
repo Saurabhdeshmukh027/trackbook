@@ -53,7 +53,7 @@ export default function AppRouter() {
   if (loading) return <LoadingScreen />;
 
   return (
-    <BrowserRouter basename="/trackbook">
+    <BrowserRouter>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* Public */}
