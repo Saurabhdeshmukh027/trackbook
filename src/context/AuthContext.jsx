@@ -31,18 +31,18 @@ export const AuthProvider = ({ children }) => {
         setUser(session.user);
         userRef.current = session.user;
 
-        // Check admin from admins table (secure, server-controlled)
-        const adminStatus = await checkIsAdmin(session.user.id);
-        setIsAdmin(adminStatus);
-
-        if (!adminStatus) {
-          try {
-            const biz = await getBusinessByUserId(session.user.id);
-            setBusiness(biz);
-          } catch (error) {
+        // Run admin check and business fetch in parallel for faster init
+        const [adminStatus, biz] = await Promise.all([
+          checkIsAdmin(session.user.id),
+          getBusinessByUserId(session.user.id).catch((error) => {
             console.error('Failed to fetch business data:', error);
-            setBusiness(null);
-          }
+            return null;
+          }),
+        ]);
+
+        setIsAdmin(adminStatus);
+        if (!adminStatus) {
+          setBusiness(biz);
         }
       } else {
         setUser(null);

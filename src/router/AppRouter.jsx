@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-// Pages
-import LandingPage from '../pages/LandingPage';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import ForgotPassword from '../pages/ForgotPassword';
-import PendingApproval from '../pages/PendingApproval';
-import Dashboard from '../pages/Dashboard';
-import Customers from '../pages/Customers';
-import AddCustomer from '../pages/AddCustomer';
-import EditCustomer from '../pages/EditCustomer';
-import CustomerProfile from '../pages/CustomerProfile';
-import DueList from '../pages/DueList';
-import Payments from '../pages/Payments';
-import RecordPayment from '../pages/RecordPayment';
-import PaymentHistory from '../pages/PaymentHistory';
-import MealPause from '../pages/MealPause';
-import MealPauseCustomer from '../pages/MealPauseCustomer';
-import Settings from '../pages/Settings';
-import AdminDashboard from '../pages/admin/AdminDashboard';
-
-// Components
+// Eagerly loaded (needed immediately)
 import LoadingScreen from '../components/LoadingScreen';
+
+// Lazy-loaded pages — only downloaded when the route is visited
+const LandingPage = lazy(() => import('../pages/LandingPage'));
+const Login = lazy(() => import('../pages/Login'));
+const Register = lazy(() => import('../pages/Register'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
+const PendingApproval = lazy(() => import('../pages/PendingApproval'));
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Customers = lazy(() => import('../pages/Customers'));
+const AddCustomer = lazy(() => import('../pages/AddCustomer'));
+const EditCustomer = lazy(() => import('../pages/EditCustomer'));
+const CustomerProfile = lazy(() => import('../pages/CustomerProfile'));
+const DueList = lazy(() => import('../pages/DueList'));
+const Payments = lazy(() => import('../pages/Payments'));
+const RecordPayment = lazy(() => import('../pages/RecordPayment'));
+const PaymentHistory = lazy(() => import('../pages/PaymentHistory'));
+const MealPause = lazy(() => import('../pages/MealPause'));
+const MealPauseCustomer = lazy(() => import('../pages/MealPauseCustomer'));
+const Settings = lazy(() => import('../pages/Settings'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -54,65 +54,67 @@ export default function AppRouter() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={
-          user
-            ? isAdmin
-              ? <Navigate to="/admin" replace />
-              : business
-                ? business.status === 'pending'
-                  ? <Navigate to="/pending" replace />
-                  : <Navigate to="/dashboard" replace />
-                : <LandingPage />
-            : <LandingPage />
-        } />
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={
+            user
+              ? isAdmin
+                ? <Navigate to="/admin" replace />
+                : business
+                  ? business.status === 'pending'
+                    ? <Navigate to="/pending" replace />
+                    : <Navigate to="/dashboard" replace />
+                  : <LandingPage />
+              : <LandingPage />
+          } />
 
-        <Route path="/login" element={
-          user
-            ? isAdmin
-              ? <Navigate to="/admin" replace />
-              : business
-                ? business.status === 'pending'
-                  ? <Navigate to="/pending" replace />
-                  : <Navigate to="/dashboard" replace />
-                : <Login />
-            : <Login />
-        } />
+          <Route path="/login" element={
+            user
+              ? isAdmin
+                ? <Navigate to="/admin" replace />
+                : business
+                  ? business.status === 'pending'
+                    ? <Navigate to="/pending" replace />
+                    : <Navigate to="/dashboard" replace />
+                  : <Login />
+              : <Login />
+          } />
 
-        <Route path="/register" element={
-          user ? <Navigate to="/dashboard" replace /> : <Register />
-        } />
+          <Route path="/register" element={
+            user ? <Navigate to="/dashboard" replace /> : <Register />
+          } />
 
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Pending */}
-        <Route path="/pending" element={
-          <PrivateRoute><PendingApproval /></PrivateRoute>
-        } />
+          {/* Pending */}
+          <Route path="/pending" element={
+            <PrivateRoute><PendingApproval /></PrivateRoute>
+          } />
 
-        {/* Admin */}
-        <Route path="/admin" element={
-          <AdminRoute><AdminDashboard /></AdminRoute>
-        } />
+          {/* Admin */}
+          <Route path="/admin" element={
+            <AdminRoute><AdminDashboard /></AdminRoute>
+          } />
 
-        {/* Business routes */}
-        <Route path="/dashboard" element={<BusinessRoute><Dashboard /></BusinessRoute>} />
-        <Route path="/customers" element={<BusinessRoute><Customers /></BusinessRoute>} />
-        <Route path="/customers/add" element={<BusinessRoute><AddCustomer /></BusinessRoute>} />
-        <Route path="/customers/:id/edit" element={<BusinessRoute><EditCustomer /></BusinessRoute>} />
-        <Route path="/customers/:id" element={<BusinessRoute><CustomerProfile /></BusinessRoute>} />
-        <Route path="/customers/:id/pay" element={<BusinessRoute><RecordPayment /></BusinessRoute>} />
-        <Route path="/customers/:id/payments" element={<BusinessRoute><PaymentHistory /></BusinessRoute>} />
-        <Route path="/customers/:id/meal-pause" element={<BusinessRoute><MealPauseCustomer /></BusinessRoute>} />
-        <Route path="/payments" element={<BusinessRoute><Payments /></BusinessRoute>} />
-        <Route path="/due-list" element={<BusinessRoute><DueList /></BusinessRoute>} />
-        <Route path="/meal-pause" element={<BusinessRoute><MealPause /></BusinessRoute>} />
-        <Route path="/settings" element={<BusinessRoute><Settings /></BusinessRoute>} />
+          {/* Business routes */}
+          <Route path="/dashboard" element={<BusinessRoute><Dashboard /></BusinessRoute>} />
+          <Route path="/customers" element={<BusinessRoute><Customers /></BusinessRoute>} />
+          <Route path="/customers/add" element={<BusinessRoute><AddCustomer /></BusinessRoute>} />
+          <Route path="/customers/:id/edit" element={<BusinessRoute><EditCustomer /></BusinessRoute>} />
+          <Route path="/customers/:id" element={<BusinessRoute><CustomerProfile /></BusinessRoute>} />
+          <Route path="/customers/:id/pay" element={<BusinessRoute><RecordPayment /></BusinessRoute>} />
+          <Route path="/customers/:id/payments" element={<BusinessRoute><PaymentHistory /></BusinessRoute>} />
+          <Route path="/customers/:id/meal-pause" element={<BusinessRoute><MealPauseCustomer /></BusinessRoute>} />
+          <Route path="/payments" element={<BusinessRoute><Payments /></BusinessRoute>} />
+          <Route path="/due-list" element={<BusinessRoute><DueList /></BusinessRoute>} />
+          <Route path="/meal-pause" element={<BusinessRoute><MealPause /></BusinessRoute>} />
+          <Route path="/settings" element={<BusinessRoute><Settings /></BusinessRoute>} />
 
-        {/* Default */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Default */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
