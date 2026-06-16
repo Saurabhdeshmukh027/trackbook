@@ -25,3 +25,4 @@ serviceAccountKey.json
 *.sw?
 .env.*
 *.env
+.vercel

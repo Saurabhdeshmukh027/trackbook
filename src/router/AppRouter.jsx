@@ -16,8 +16,8 @@ const Customers = lazy(() => import('../pages/Customers'));
 const AddCustomer = lazy(() => import('../pages/AddCustomer'));
 const EditCustomer = lazy(() => import('../pages/EditCustomer'));
 const CustomerProfile = lazy(() => import('../pages/CustomerProfile'));
-const DueList = lazy(() => import('../pages/DueList'));
-const Payments = lazy(() => import('../pages/Payments'));
+const DueList = null; // removed
+const Payments = null; // removed
 const RecordPayment = lazy(() => import('../pages/RecordPayment'));
 const PaymentHistory = lazy(() => import('../pages/PaymentHistory'));
 const MealPause = lazy(() => import('../pages/MealPause'));
@@ -106,8 +106,6 @@ export default function AppRouter() {
           <Route path="/customers/:id/pay" element={<BusinessRoute><RecordPayment /></BusinessRoute>} />
           <Route path="/customers/:id/payments" element={<BusinessRoute><PaymentHistory /></BusinessRoute>} />
           <Route path="/customers/:id/meal-pause" element={<BusinessRoute><MealPauseCustomer /></BusinessRoute>} />
-          <Route path="/payments" element={<BusinessRoute><Payments /></BusinessRoute>} />
-          <Route path="/due-list" element={<BusinessRoute><DueList /></BusinessRoute>} />
           <Route path="/meal-pause" element={<BusinessRoute><MealPause /></BusinessRoute>} />
           <Route path="/settings" element={<BusinessRoute><Settings /></BusinessRoute>} />
 

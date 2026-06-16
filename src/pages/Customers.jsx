@@ -11,7 +11,7 @@ import BusinessShell from '../components/BusinessShell';
 import MemberAvatar from '../components/MemberAvatar';
 import { MemberRowSkeleton } from '../components/SkeletonBlock';
 
-const FILTERS = ['all', 'active', 'due', 'overdue', 'expired'];
+const FILTERS = ['all', 'active', 'expired'];
 
 const STATUS_STYLES = { active: 'badge-success', due: 'badge-warning', overdue: 'badge-danger', expired: 'badge-muted' };
 
@@ -29,9 +29,7 @@ export default function Customers() {
   const FILTER_LABELS = {
     all: t('common.all'),
     active: t('common.active'),
-    due: t('common.due'),
-    overdue: t('common.overdue'),
-    expired: t('common.expired'),
+    expired: t('common.expired') || 'Expired',
   };
 
   useEffect(() => {
@@ -49,17 +47,24 @@ export default function Customers() {
     return unsubscribe;
   }, [business?.id]);
 
-  const counts = useMemo(() => ({
-    all: customers.length,
-    active: customers.filter((c) => getCustomerStatus(c) === 'active').length,
-    due: customers.filter((c) => getCustomerStatus(c) === 'due').length,
-    overdue: customers.filter((c) => getCustomerStatus(c) === 'overdue').length,
-    expired: customers.filter((c) => getCustomerStatus(c) === 'expired').length,
-  }), [customers]);
+  const counts = useMemo(() => {
+    const expiredCount = customers.filter((c) => {
+      const s = getCustomerStatus(c);
+      return s === 'due' || s === 'overdue' || s === 'expired';
+    }).length;
+    return {
+      all: customers.length,
+      active: customers.filter((c) => getCustomerStatus(c) === 'active').length,
+      expired: expiredCount,
+    };
+  }, [customers]);
 
   const filtered = useMemo(() => {
     let result = customers.filter((c) => {
-      if (filter !== 'all' && getCustomerStatus(c) !== filter) return false;
+      if (filter === 'expired') {
+        const s = getCustomerStatus(c);
+        if (s !== 'due' && s !== 'overdue' && s !== 'expired') return false;
+      } else if (filter !== 'all' && getCustomerStatus(c) !== filter) return false;
       if (!query.trim()) return true;
       const val = query.toLowerCase();
       return c.name?.toLowerCase().includes(val) || c.mobile?.includes(query);

@@ -1,9 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  AlertCircle,
   BookOpen,
-  CreditCard,
   LayoutDashboard,
   LogOut,
   PauseCircle,
@@ -42,8 +40,6 @@ export default function BusinessShell({
   const NAV_ITEMS = [
     { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/customers', icon: Users, label: t('nav.customers') },
-    { to: '/due-list', icon: AlertCircle, label: t('nav.dueList') },
-    { to: '/payments', icon: CreditCard, label: t('nav.payments') },
     { to: '/meal-pause', icon: PauseCircle, label: t('nav.mealPause') },
     { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];

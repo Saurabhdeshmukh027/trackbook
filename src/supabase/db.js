@@ -1,5 +1,27 @@
 import { supabase } from './config';
 
+// ─── Photo Upload ───────────────────────────────────────────────────────────
+
+export const uploadCustomerPhoto = async (businessId, file) => {
+  const ext = file.name.split('.').pop();
+  const fileName = `${businessId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('customer-photos')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage
+    .from('customer-photos')
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+};
+
 // ─── Timestamp helpers ──────────────────────────────────────────────────────
 export const Timestamp = {
   fromDate: (date) => date.toISOString(),
