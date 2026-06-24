@@ -64,21 +64,21 @@ export default function AdminDashboard() {
 
   return (
     <div className="app-shell">
-      <div className="business-topbar">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+      <div className="business-topbar" style={{ flexWrap: 'wrap' }}>
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white flex-shrink-0"
             style={{ background: 'linear-gradient(135deg, var(--accent-secondary), var(--accent-primary))' }}>
             <Shield className="h-5 w-5" />
           </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--text-faint)' }}>{t('admin.title')}</p>
-            <h1 className="text-xl font-extrabold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] hidden sm:block" style={{ color: 'var(--text-faint)' }}>{t('admin.title')}</p>
+            <h1 className="text-lg sm:text-xl font-extrabold truncate" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}>
               {t('admin.businessManagement')}
             </h1>
           </div>
         </div>
-        <button className="btn-ghost" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" /> {t('admin.logout')}
+        <button className="btn-ghost flex-shrink-0" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">{t('admin.logout')}</span>
         </button>
       </div>
 
@@ -92,55 +92,103 @@ export default function AdminDashboard() {
             <p className="text-xl font-bold" style={{ color: 'var(--text-main)' }}>{t('admin.noBusinesses')}</p>
           </div>
         ) : (
-          <div className="table-wrap">
-            <table className="ledger-table">
-              <thead>
-                <tr>
-                  <th>{t('admin.business')}</th>
-                  <th>{t('admin.owner')}</th>
-                  <th>{t('admin.mobile')}</th>
-                  <th>{t('admin.created')}</th>
-                  <th>{t('admin.status')}</th>
-                  <th>{t('admin.actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {businesses.map((biz) => (
-                  <tr key={biz.id}>
-                    <td className="font-bold">{biz.business_name || '—'}</td>
-                    <td>{biz.owner_name || '—'}</td>
-                    <td>{biz.mobile || '—'}</td>
-                    <td>{formatDate(biz.created_at)}</td>
-                    <td>
-                      <span className={STATUS_BADGES[biz.status]}>{STATUS_LABELS[biz.status] || biz.status}</span>
-                    </td>
-                    <td>
-                      <div className="flex gap-2">
-                        {biz.status === 'pending' && (
-                          <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px' }}
-                            onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.approve') })}>
-                            <CheckCircle2 className="h-3.5 w-3.5" /> {t('admin.approve')}
-                          </button>
-                        )}
-                        {biz.status === 'active' && (
-                          <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--accent-danger)' }}
-                            onClick={() => setConfirm({ id: biz.id, action: 'suspended', label: t('admin.suspend') })}>
-                            <XCircle className="h-3.5 w-3.5" /> {t('admin.suspend')}
-                          </button>
-                        )}
-                        {biz.status === 'suspended' && (
-                          <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--accent-tertiary)' }}
-                            onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.activate') })}>
-                            <CheckCircle2 className="h-3.5 w-3.5" /> {t('admin.activate')}
-                          </button>
-                        )}
-                      </div>
-                    </td>
+          <>
+            {/* Mobile Card Layout */}
+            <div className="space-y-4 md:hidden">
+              {businesses.map((biz) => (
+                <div key={biz.id} className="card">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-lg font-bold truncate" style={{ color: 'var(--text-main)' }}>{biz.business_name || '—'}</p>
+                      <p className="mt-1 text-sm" style={{ color: 'var(--text-soft)' }}>{biz.owner_name || '—'}</p>
+                    </div>
+                    <span className={STATUS_BADGES[biz.status]}>{STATUS_LABELS[biz.status] || biz.status}</span>
+                  </div>
+                  <div className="mt-4 space-y-2 rounded-[16px] border p-3" style={{ borderColor: 'var(--border-soft)', background: 'rgba(255, 252, 248, 0.84)' }}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span style={{ color: 'var(--text-soft)' }}>{t('admin.mobile')}</span>
+                      <strong style={{ color: 'var(--text-main)' }}>{biz.mobile || '—'}</strong>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span style={{ color: 'var(--text-soft)' }}>{t('admin.created')}</span>
+                      <strong style={{ color: 'var(--text-main)' }}>{formatDate(biz.created_at)}</strong>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    {biz.status === 'pending' && (
+                      <button className="btn-soft flex-1" style={{ fontSize: '13px' }}
+                        onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.approve') })}>
+                        <CheckCircle2 className="h-4 w-4" /> {t('admin.approve')}
+                      </button>
+                    )}
+                    {biz.status === 'active' && (
+                      <button className="btn-soft flex-1" style={{ fontSize: '13px', color: 'var(--accent-danger)' }}
+                        onClick={() => setConfirm({ id: biz.id, action: 'suspended', label: t('admin.suspend') })}>
+                        <XCircle className="h-4 w-4" /> {t('admin.suspend')}
+                      </button>
+                    )}
+                    {biz.status === 'suspended' && (
+                      <button className="btn-soft flex-1" style={{ fontSize: '13px', color: 'var(--accent-tertiary)' }}
+                        onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.activate') })}>
+                        <CheckCircle2 className="h-4 w-4" /> {t('admin.activate')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="table-wrap hidden md:block">
+              <table className="ledger-table">
+                <thead>
+                  <tr>
+                    <th>{t('admin.business')}</th>
+                    <th>{t('admin.owner')}</th>
+                    <th>{t('admin.mobile')}</th>
+                    <th>{t('admin.created')}</th>
+                    <th>{t('admin.status')}</th>
+                    <th>{t('admin.actions')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {businesses.map((biz) => (
+                    <tr key={biz.id}>
+                      <td className="font-bold">{biz.business_name || '—'}</td>
+                      <td>{biz.owner_name || '—'}</td>
+                      <td>{biz.mobile || '—'}</td>
+                      <td>{formatDate(biz.created_at)}</td>
+                      <td>
+                        <span className={STATUS_BADGES[biz.status]}>{STATUS_LABELS[biz.status] || biz.status}</span>
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          {biz.status === 'pending' && (
+                            <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px' }}
+                              onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.approve') })}>
+                              <CheckCircle2 className="h-3.5 w-3.5" /> {t('admin.approve')}
+                            </button>
+                          )}
+                          {biz.status === 'active' && (
+                            <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--accent-danger)' }}
+                              onClick={() => setConfirm({ id: biz.id, action: 'suspended', label: t('admin.suspend') })}>
+                              <XCircle className="h-3.5 w-3.5" /> {t('admin.suspend')}
+                            </button>
+                          )}
+                          {biz.status === 'suspended' && (
+                            <button className="btn-soft" style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--accent-tertiary)' }}
+                              onClick={() => setConfirm({ id: biz.id, action: 'active', label: t('admin.activate') })}>
+                              <CheckCircle2 className="h-3.5 w-3.5" /> {t('admin.activate')}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

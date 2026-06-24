@@ -76,7 +76,7 @@ export default function CustomerProfile() {
 
         {/* Customer Details */}
         <section className="card">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="flex items-start gap-5">
               <MemberAvatar photoURL={customer.photo_url} name={customer.name} size={80} rounded="28px" />
               <div>
@@ -90,11 +90,11 @@ export default function CustomerProfile() {
             </div>
 
             {!isSuspended && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 w-full md:w-auto">
                 <button className="btn-soft" onClick={() => navigate(`/customers/${id}/edit`)}>
                   <Edit3 className="h-4 w-4" /> {t('common.edit')}
                 </button>
-                <button className="btn-primary" style={{ width: 'auto' }} onClick={() => navigate(`/customers/${id}/pay`)}>
+                <button className="btn-primary" style={{ width: 'auto', flex: 'none' }} onClick={() => navigate(`/customers/${id}/pay`)}>
                   <CreditCard className="h-4 w-4" /> {t('customers.recordPayment')}
                 </button>
                 {customer.mobile && (
@@ -113,7 +113,7 @@ export default function CustomerProfile() {
         {/* Subscription Details */}
         <section className="card">
           <p className="section-title">{t('customerProfile.subscriptionDetails')}</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-[18px] border p-4" style={{ borderColor: 'var(--border-soft)' }}>
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>{t('customerProfile.mealPlan')}</p>
               <p className="mt-2 text-lg font-bold" style={{ color: 'var(--text-main)' }}>{getMealPlanLabel(customer.meal_plan)}</p>

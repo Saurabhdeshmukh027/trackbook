@@ -108,11 +108,11 @@ export default function Dashboard() {
       <div className="space-y-8">
         {/* ─── Stat Cards (3 only) ──────────────────────────────────────── */}
         {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
           </div>
         ) : (
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <section className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <div className="stat-card">
               <Users className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
               <p className="mt-4 stat-label">{t('dashboard.totalCustomers')}</p>
@@ -147,7 +147,7 @@ export default function Dashboard() {
         )}
 
         {/* ─── Expired Customers + Revenue Chart ────────────────────────── */}
-        <section className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
           {loading ? (
             <><CardSkeleton lines={5} /><CardSkeleton lines={5} /></>
           ) : (
@@ -219,7 +219,7 @@ export default function Dashboard() {
                   </p>
                 </div>
 
-                <div className="mt-8 flex h-52 items-end gap-3">
+                <div className="mt-8 flex h-44 sm:h-52 items-end gap-2 sm:gap-3">
                   {monthlyRevenue.map((entry) => {
                     const height = Math.max(12, Math.round((entry.collected / maxRevenue) * 100));
                     return (

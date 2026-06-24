@@ -124,24 +124,24 @@ export default function BusinessShell({
 
         <main className="business-main">
           <div className="business-topbar">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--text-faint)' }}>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] hidden sm:block" style={{ color: 'var(--text-faint)' }}>
                 TrackBook
               </p>
               <h1
-                className="mt-1 truncate font-extrabold"
-                style={{ color: 'var(--text-main)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.2rem, 1rem + 1vw, 2rem)' }}
+                className="mt-0 sm:mt-1 truncate font-extrabold"
+                style={{ color: 'var(--text-main)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.1rem, 0.9rem + 1vw, 2rem)' }}
               >
                 {title}
               </h1>
               {subtitle && (
-                <p className="mt-1 truncate text-sm" style={{ color: 'var(--text-soft)' }}>
+                <p className="mt-1 truncate text-sm hidden sm:block" style={{ color: 'var(--text-soft)' }}>
                   {subtitle}
                 </p>
               )}
             </div>
 
-            <div className="flex items-center gap-2">{actions}</div>
+            <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>
           </div>
 
           <div className={`business-body ${contentClassName}`}>{children}</div>

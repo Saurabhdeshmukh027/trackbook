@@ -108,7 +108,7 @@ export default function MealPauseCustomer() {
         ) : (
           <>
             {/* Stats */}
-            <section className="grid gap-4 sm:grid-cols-3">
+            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               <div className="stat-card">
                 <PauseCircle className="h-5 w-5" style={{ color: 'var(--accent-info)' }} />
                 <p className="mt-4 stat-label">{t('mealPauseCustomer.unsettledDays')}</p>
@@ -126,7 +126,7 @@ export default function MealPauseCustomer() {
               </div>
             </section>
 
-            <section className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+            <section className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
               <div className="space-y-6">
                 {/* Add Pause Form */}
                 {!isSuspended && (

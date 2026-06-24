@@ -89,7 +89,7 @@ export default function RecordPayment() {
       <div className="space-y-6">
         <PageHeader title={t('recordPayment.title')} subtitle={customer.name} />
 
-        <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Customer Summary */}
           <div className="card">
             <div className="flex items-center gap-4">
@@ -103,7 +103,7 @@ export default function RecordPayment() {
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               <div className="rounded-[22px] border p-4" style={{ borderColor: 'var(--border-soft)' }}>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-faint)' }}>{t('recordPayment.totalPlan')}</p>
                 <p className="mt-3 text-xl font-extrabold" style={{ color: 'var(--text-main)' }}>{formatCurrency(customer.subscription_amount)}</p>

@@ -1058,7 +1058,211 @@ textarea {
   50% { transform: translateY(-8px); }
 }
 
-/* ─── Desktop Layout ─────────────────────────────────────────────────────── */
+/* ─── Mobile — Very Small (≤ 480px) ──────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .business-topbar {
+    padding: 14px 14px;
+    gap: 10px;
+  }
+
+  .business-topbar h1 {
+    font-size: 1.1rem !important;
+  }
+
+  .business-topbar p {
+    display: none;
+  }
+
+  .business-body {
+    width: calc(100% - 16px);
+    padding-top: 16px;
+  }
+
+  .card,
+  .card-glass {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .hero-card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .member-row {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .page-header-copy h1 {
+    font-size: 1.2rem;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    min-height: 44px;
+    font-size: 13px;
+    border-radius: 14px;
+    padding: 0 14px;
+  }
+
+  .btn-soft,
+  .btn-ghost {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .input,
+  .textarea,
+  .select {
+    min-height: 44px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+  }
+
+  .bottom-nav {
+    left: 8px;
+    right: 8px;
+    bottom: 10px;
+    padding: 6px;
+    border-radius: 18px;
+  }
+
+  .nav-item {
+    padding: 6px 2px;
+  }
+
+  .nav-item span {
+    font-size: 8px;
+  }
+
+  .fab {
+    right: 16px;
+    bottom: 80px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .landing-nav {
+    padding: 12px 14px;
+  }
+
+  .landing-hero {
+    padding: 100px 16px 60px;
+  }
+
+  .landing-section,
+  .landing-section-alt {
+    padding: 48px 16px;
+  }
+
+  .landing-feature-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .landing-pricing-card {
+    padding: 24px;
+    border-radius: 22px;
+  }
+
+  .landing-faq-trigger {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .landing-footer {
+    padding: 32px 16px 24px;
+  }
+
+  /* Admin mobile card layout */
+  .admin-mobile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin-mobile-card .admin-card-item {
+    background: rgba(250, 247, 242, 0.92);
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* ─── Mobile — Standard (≤ 640px) ────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .business-body {
+    width: calc(100% - 20px);
+    padding-top: 18px;
+  }
+
+  .hero-card {
+    padding: 20px;
+  }
+
+  .page-header {
+    margin-bottom: 14px;
+  }
+
+  /* Stack customer action buttons */
+  .customer-actions-row {
+    flex-wrap: wrap;
+  }
+
+  .customer-actions-row .btn-secondary {
+    flex: 1 1 100%;
+  }
+
+  /* Ensure table doesn't break */
+  .ledger-table {
+    min-width: 520px;
+  }
+
+  .ledger-table th,
+  .ledger-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .premium-card {
+    border-radius: 22px;
+  }
+}
+
+/* ─── Tablet (≤ 1023px) ──────────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .business-body {
+    width: min(100% - 24px, 720px);
+    padding-top: 20px;
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+  }
+}
+
+/* ─── Desktop Layout (≥ 1024px) ──────────────────────────────────────────── */
 
 @media (min-width: 1024px) {
   .business-sidebar {
@@ -1092,20 +1296,5 @@ textarea {
   .public-shell-inner {
     grid-template-columns: 1.08fr 0.92fr;
     align-items: stretch;
-  }
-}
-
-@media (max-width: 1023px) {
-  .business-body {
-    width: min(100% - 24px, 720px);
-    padding-top: 20px;
-  }
-
-  .hero-card {
-    padding: 22px;
-  }
-
-  .page-header {
-    margin-bottom: 16px;
   }
 }

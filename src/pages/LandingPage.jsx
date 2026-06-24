@@ -70,17 +70,18 @@ export default function LandingPage() {
           </div>
           <span className="gradient-text text-xl font-extrabold">TrackBook</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <LanguageSwitcher compact variant="navbar" />
-          <button className="btn-ghost" onClick={() => navigate('/login')}>
+          <button className="btn-ghost hidden sm:inline-flex" onClick={() => navigate('/login')}>
             {t('landing.login')}
           </button>
           <button
             className="btn-primary"
-            style={{ width: 'auto', minHeight: '40px', padding: '0 20px', fontSize: '13px' }}
-            onClick={() => navigate('/register')}
+            style={{ width: 'auto', minHeight: '40px', padding: '0 16px', fontSize: '13px' }}
+            onClick={() => navigate('/login')}
           >
-            {t('landing.startFreeTrial')}
+            <span className="sm:hidden">{t('landing.login')}</span>
+            <span className="hidden sm:inline">{t('landing.startFreeTrial')}</span>
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
@@ -97,7 +98,7 @@ export default function LandingPage() {
             {t('landing.builtForIndian')}
           </div>
           <h1
-            className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight md:text-6xl"
+            className="mx-auto mt-6 max-w-3xl text-3xl font-extrabold leading-tight sm:text-4xl md:text-6xl"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
           >
             {t('landing.heroTitle')}{' '}
@@ -135,7 +136,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="section-title">{t('landing.whyTrackBook')}</p>
             <h2
-              className="mt-3 text-3xl font-extrabold md:text-4xl"
+              className="mt-3 text-2xl font-extrabold sm:text-3xl md:text-4xl"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
             >
               {t('landing.replaceManual')}
@@ -163,7 +164,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="section-title">{t('landing.features')}</p>
             <h2
-              className="mt-3 text-3xl font-extrabold md:text-4xl"
+              className="mt-3 text-2xl font-extrabold sm:text-3xl md:text-4xl"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
             >
               {t('landing.everythingYouNeed')}
@@ -193,7 +194,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="section-title">{t('landing.pricing')}</p>
             <h2
-              className="mt-3 text-3xl font-extrabold md:text-4xl"
+              className="mt-3 text-2xl font-extrabold sm:text-3xl md:text-4xl"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
             >
               {t('landing.startFreeGrow')}
@@ -242,7 +243,7 @@ export default function LandingPage() {
           <div className="text-center">
             <p className="section-title">{t('landing.faq')}</p>
             <h2
-              className="mt-3 text-3xl font-extrabold md:text-4xl"
+              className="mt-3 text-2xl font-extrabold sm:text-3xl md:text-4xl"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
             >
               {t('landing.commonQuestions')}
@@ -286,7 +287,7 @@ export default function LandingPage() {
             {t('landing.worksOnMobile')}
           </div>
           <h2
-            className="mt-6 text-3xl font-extrabold md:text-4xl"
+            className="mt-6 text-2xl font-extrabold sm:text-3xl md:text-4xl"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: 'var(--text-main)' }}
           >
             {t('landing.readyToDigitize')}
