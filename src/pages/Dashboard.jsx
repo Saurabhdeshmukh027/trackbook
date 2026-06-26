@@ -1,17 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertCircle,
   ArrowRight,
   CheckCircle2,
   Phone,
+  RotateCcw,
+  TrendingDown,
   TrendingUp,
   UserPlus,
   Users,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { getPaymentsByBusiness, subscribeToCustomers } from '../supabase/db';
+import { getPaymentsByBusiness, subscribeToCustomers, subscribeToExpenses, addPayment, updateCustomer } from '../supabase/db';
 import {
   calcDashboardStats,
   calcMonthlyRevenue,
@@ -20,6 +22,7 @@ import {
   formatDate,
   getCustomerStatus,
   toDate,
+  buildQuickRestartData,
 } from '../utils/subscriptionUtils';
 import { CardSkeleton, StatCardSkeleton } from '../components/SkeletonBlock';
 import BusinessShell from '../components/BusinessShell';
@@ -33,8 +36,57 @@ export default function Dashboard() {
   const [todayStats, setTodayStats] = useState({ count: 0, total: 0 });
   const [customerCounts, setCustomerCounts] = useState({ total: 0 });
   const [customers, setCustomers] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [renewLoading, setRenewLoading] = useState(null);
+
+  const handleQuickRenew = async (e, customer) => {
+    e.stopPropagation();
+    
+    const confirmMsg = t('customers.confirmQuickRenew', { 
+      name: customer.name, 
+      amount: formatCurrency(customer.subscription_amount) 
+    });
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setRenewLoading(customer.id);
+    try {
+      await addPayment(business.id, customer.id, {
+        amount: customer.subscription_amount || 0,
+        payment_mode: 'cash',
+        note: 'Quick Restart (One-click)',
+      });
+
+      const renewalData = buildQuickRestartData(customer);
+      await updateCustomer(business.id, customer.id, renewalData);
+
+      const successMsg = t('customers.quickRenewSuccess', { name: customer.name });
+      toast.success(`✅ ${successMsg}`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setRenewLoading(null);
+    }
+  };
+
+  // Calculate current month's total expenses and balance
+  const totalExpensesThisMonth = useMemo(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    return expenses
+      .filter((exp) => {
+        const d = toDate(exp.date);
+        return d && d >= startOfMonth && d <= endOfMonth;
+      })
+      .reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
+  }, [expenses]);
+
+  const totalBalanceThisMonth = useMemo(() => {
+    return stats.collectedThisMonth - totalExpensesThisMonth;
+  }, [stats.collectedThisMonth, totalExpensesThisMonth]);
 
   // Customers whose subscription month has expired (end_date passed)
   const expiredCustomers = useMemo(
@@ -91,6 +143,14 @@ export default function Dashboard() {
     return unsubscribe;
   }, [business?.id]);
 
+  useEffect(() => {
+    if (!business?.id) return undefined;
+    const unsubscribe = subscribeToExpenses(business.id, (data) => {
+      setExpenses(data);
+    });
+    return unsubscribe;
+  }, [business?.id]);
+
   return (
     <BusinessShell
       title={t('nav.dashboard')}
@@ -106,13 +166,13 @@ export default function Dashboard() {
       }
     >
       <div className="space-y-8">
-        {/* ─── Stat Cards (3 only) ──────────────────────────────────────── */}
+        {/* ─── Stat Cards ──────────────────────────────────────────────── */}
         {loading ? (
-          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
           </div>
         ) : (
-          <section className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <section className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <div className="stat-card">
               <Users className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
               <p className="mt-4 stat-label">{t('dashboard.totalCustomers')}</p>
@@ -121,7 +181,7 @@ export default function Dashboard() {
 
             <div
               className="stat-card"
-              style={{ background: 'linear-gradient(135deg, rgba(231, 111, 81, 0.94), rgba(244, 162, 97, 0.94))' }}
+              style={{ background: 'linear-gradient(135deg, rgba(42, 143, 121, 0.94), rgba(76, 175, 140, 0.94))' }}
             >
               <TrendingUp className="h-5 w-5 text-white" />
               <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-white/78">{t('dashboard.thisMonth')}</p>
@@ -141,6 +201,33 @@ export default function Dashboard() {
               </p>
               <p className="mt-2 text-xs font-semibold text-white/60">
                 {t('dashboard.paymentsReceived', { count: todayStats.count, s: todayStats.count !== 1 ? 's' : '' })}
+              </p>
+            </div>
+
+            <div
+              className="stat-card"
+              style={{ background: 'linear-gradient(135deg, rgba(201, 75, 75, 0.94), rgba(229, 115, 115, 0.94))', cursor: 'pointer' }}
+              onClick={() => navigate('/expenses')}
+            >
+              <TrendingDown className="h-5 w-5 text-white" />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-white/78">{t('dashboard.monthlyExpenses')}</p>
+              <p className="mt-2 text-[2rem] font-extrabold leading-none text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                {formatCurrency(totalExpensesThisMonth)}
+              </p>
+            </div>
+
+            <div
+              className="stat-card"
+              style={{
+                background: totalBalanceThisMonth >= 0
+                  ? 'linear-gradient(135deg, rgba(42, 143, 121, 0.94), rgba(76, 175, 140, 0.94))'
+                  : 'linear-gradient(135deg, rgba(201, 75, 75, 0.94), rgba(229, 115, 115, 0.94))'
+              }}
+            >
+              <Wallet className="h-5 w-5 text-white" />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-white/78">{t('dashboard.totalBalance')}</p>
+              <p className="mt-2 text-[2rem] font-extrabold leading-none text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                {formatCurrency(totalBalanceThisMonth)}
               </p>
             </div>
           </section>
@@ -189,6 +276,19 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
+                          <button
+                            className="btn-soft"
+                            style={{ padding: '8px', minWidth: 0, color: 'var(--accent-primary-dark)' }}
+                            title={t('customers.quickRenew')}
+                            onClick={(e) => handleQuickRenew(e, customer)}
+                            disabled={renewLoading === customer.id}
+                          >
+                            {renewLoading === customer.id ? (
+                              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <RotateCcw className="h-4 w-4" />
+                            )}
+                          </button>
                           {customer.mobile && (
                             <a
                               className="btn-soft"

@@ -9,6 +9,7 @@ import {
   Settings,
   UserPlus,
   Users,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -41,6 +42,7 @@ export default function BusinessShell({
     { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/customers', icon: Users, label: t('nav.customers') },
     { to: '/meal-pause', icon: PauseCircle, label: t('nav.mealPause') },
+    { to: '/expenses', icon: Wallet, label: t('nav.expenses') },
     { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 
@@ -111,7 +113,7 @@ export default function BusinessShell({
             <div className="mb-3">
               <LanguageSwitcher variant="sidebar" />
             </div>
-            <button className="sidebar-link w-full" onClick={() => navigate('/customers?search=1')}>
+            <button className="sidebar-link w-full" onClick={() => navigate('/customers?search=' + Date.now())}>
               <Search />
               <span>{t('common.searchCustomers')}</span>
             </button>

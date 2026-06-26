@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Calendar, CreditCard, Edit3, MessageCircle, PauseCircle, Phone, Trash2 } from 'lucide-react';
+import { Calendar, CreditCard, Edit3, MessageCircle, PauseCircle, Phone, RotateCcw, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { subscribeToCustomer, deleteCustomer, getPaymentsByCustomer, getAllMealPauses } from '../supabase/db';
-import { formatCurrency, formatDate, getCustomerStatus, getMealPlanLabel } from '../utils/subscriptionUtils';
+import { subscribeToCustomer, deleteCustomer, getPaymentsByCustomer, getAllMealPauses, addPayment, updateCustomer } from '../supabase/db';
+import { formatCurrency, formatDate, getCustomerStatus, getMealPlanLabel, buildQuickRestartData } from '../utils/subscriptionUtils';
 import { sendDueReminder, sendPaymentReminder } from '../utils/whatsapp';
 import BusinessShell from '../components/BusinessShell';
 import MemberAvatar from '../components/MemberAvatar';
@@ -23,9 +23,41 @@ export default function CustomerProfile() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isSuspended = business?.status === 'suspended';
+  const [renewLoading, setRenewLoading] = useState(false);
 
-  const STATUS_STYLES = { active: 'badge-success', due: 'badge-warning', overdue: 'badge-danger' };
-  const STATUS_LABELS = { active: t('common.active'), due: t('common.due'), overdue: t('common.overdue') };
+  const handleQuickRenew = async () => {
+    const confirmMsg = t('customers.confirmQuickRenew', { 
+      name: customer.name, 
+      amount: formatCurrency(customer.subscription_amount) 
+    });
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setRenewLoading(true);
+    try {
+      await addPayment(business.id, customer.id, {
+        amount: customer.subscription_amount || 0,
+        payment_mode: 'cash',
+        note: 'Quick Restart (One-click)',
+      });
+
+      const renewalData = buildQuickRestartData(customer);
+      await updateCustomer(business.id, customer.id, renewalData);
+
+      const pay = await getPaymentsByCustomer(business.id, id);
+      setPayments(pay);
+
+      const successMsg = t('customers.quickRenewSuccess', { name: customer.name });
+      toast.success(`✅ ${successMsg}`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setRenewLoading(false);
+    }
+  };
+
+  const STATUS_STYLES = { active: 'badge-success', due: 'badge-warning', overdue: 'badge-danger', expired: 'badge-muted' };
+  const STATUS_LABELS = { active: t('common.active'), due: t('common.due'), overdue: t('common.overdue'), expired: t('common.expired') || 'Expired' };
 
   useEffect(() => {
     if (!business?.id || !id) return;
@@ -94,6 +126,11 @@ export default function CustomerProfile() {
                 <button className="btn-soft" onClick={() => navigate(`/customers/${id}/edit`)}>
                   <Edit3 className="h-4 w-4" /> {t('common.edit')}
                 </button>
+                {(status === 'expired' || status === 'overdue' || status === 'due') && (
+                  <button className="btn-soft" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--accent-primary-dark)' }} onClick={handleQuickRenew} disabled={renewLoading}>
+                    <RotateCcw className={`h-4 w-4 ${renewLoading ? 'animate-spin' : ''}`} /> {t('customers.quickRenew')}
+                  </button>
+                )}
                 <button className="btn-primary" style={{ width: 'auto', flex: 'none' }} onClick={() => navigate(`/customers/${id}/pay`)}>
                   <CreditCard className="h-4 w-4" /> {t('customers.recordPayment')}
                 </button>

@@ -23,6 +23,7 @@ const PaymentHistory = lazy(() => import('../pages/PaymentHistory'));
 const MealPause = lazy(() => import('../pages/MealPause'));
 const MealPauseCustomer = lazy(() => import('../pages/MealPauseCustomer'));
 const Settings = lazy(() => import('../pages/Settings'));
+const Expenses = lazy(() => import('../pages/Expenses'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 
 const PrivateRoute = ({ children }) => {
@@ -107,6 +108,7 @@ export default function AppRouter() {
           <Route path="/customers/:id/payments" element={<BusinessRoute><PaymentHistory /></BusinessRoute>} />
           <Route path="/customers/:id/meal-pause" element={<BusinessRoute><MealPauseCustomer /></BusinessRoute>} />
           <Route path="/meal-pause" element={<BusinessRoute><MealPause /></BusinessRoute>} />
+          <Route path="/expenses" element={<BusinessRoute><Expenses /></BusinessRoute>} />
           <Route path="/settings" element={<BusinessRoute><Settings /></BusinessRoute>} />
 
           {/* Default */}

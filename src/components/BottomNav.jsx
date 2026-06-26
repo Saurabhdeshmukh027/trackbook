@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PauseCircle, Settings, Users } from 'lucide-react';
+import { LayoutDashboard, PauseCircle, Settings, Users, Wallet } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 function isActive(pathname, to) {
@@ -18,6 +18,7 @@ export default function BottomNav() {
     { to: '/dashboard', icon: LayoutDashboard, label: t('nav.home') },
     { to: '/customers', icon: Users, label: t('nav.customers') },
     { to: '/meal-pause', icon: PauseCircle, label: t('nav.mealPause') || 'Pause' },
+    { to: '/expenses', icon: Wallet, label: t('nav.expenses') },
     { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 

@@ -51,6 +51,7 @@
     "dueList": "Due List",
     "payments": "Payments",
     "mealPause": "Meal Pause",
+    "expenses": "Expenses",
     "settings": "Settings",
     "home": "Home"
   },
@@ -62,6 +63,8 @@
     "overdueCustomers": "Overdue Customers",
     "pendingCollection": "Pending Collection",
     "thisMonth": "This Month",
+    "monthlyExpenses": "Monthly Expenses",
+    "totalBalance": "Total Balance",
     "todaysCollection": "Today's Collection",
     "paymentsReceived": "{count} payment{s} received today",
     "pausedCustomers": "Paused Customers",
@@ -96,7 +99,10 @@
     "dueDate": "Due Date",
     "recordPayment": "Record Payment",
     "call": "Call",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "quickRenew": "Quick Renew",
+    "confirmQuickRenew": "Confirm quick renewal for {name}? This will record a payment of {amount} and restart their subscription.",
+    "quickRenewSuccess": "Subscription restarted for {name}!"
   },
 
   "addCustomer": {
@@ -475,5 +481,41 @@
     "quickCollectRenew": "Quick collect & renew",
     "quickPartial": "Quick partial payment",
     "enterValidAmount": "Enter a valid amount"
+  },
+
+  "expenses": {
+    "title": "Expenses",
+    "subtitle": "Manage business expenses",
+    "totalExpenses": "Total Expenses",
+    "addExpense": "Add Expense",
+    "editExpense": "Edit Expense",
+    "expenseTitle": "Expense Title",
+    "amount": "Amount (₹)",
+    "category": "Category",
+    "date": "Date",
+    "note": "Note (optional)",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDelete": "Delete Expense?",
+    "deleteConfirmMsg": "Are you sure you want to delete this expense?",
+    "successAdd": "Expense added successfully",
+    "successUpdate": "Expense updated successfully",
+    "successDelete": "Expense deleted successfully",
+    "failedOperation": "Operation failed",
+    "noExpenses": "No expenses recorded for this month.",
+    "selectMonth": "Select Month",
+    "titlePlaceholder": "e.g., Groceries, Rent, Gas",
+    "notePlaceholder": "e.g., Paid to vendor A",
+    "categories": {
+      "rent": "Rent",
+      "salary": "Salary",
+      "groceries": "Groceries",
+      "gas": "Gas/Fuel",
+      "transport": "Transport",
+      "utilities": "Utilities",
+      "maintenance": "Maintenance",
+      "other": "Other"
+    }
   }
 }

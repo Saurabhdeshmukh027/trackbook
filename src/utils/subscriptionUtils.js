@@ -69,6 +69,29 @@ export const buildRenewalData = (customer) => {
   };
 };
 
+export const buildQuickRestartData = (customer) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const previousEnd = toDate(customer.end_date);
+  let nextStart;
+  if (previousEnd && previousEnd >= today) {
+    nextStart = addDays(previousEnd, 1);
+  } else {
+    nextStart = today;
+  }
+  const nextEnd = calcEndDate(nextStart, customer.subscription_duration || 30);
+
+  return {
+    start_date: Timestamp.fromDate(nextStart),
+    end_date: Timestamp.fromDate(nextEnd),
+    amount_paid: customer.subscription_amount || 0,
+    amount_due: 0,
+    status: 'active',
+  };
+};
+
+
 export const calcDashboardStats = (customers, payments) => {
   const monthStart = startOfMonth(new Date());
   const monthEnd = endOfMonth(new Date());

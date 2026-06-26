@@ -7,16 +7,66 @@
     <!-- Preconnect to Google Fonts for faster font loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" />
+    <!-- Non-render-blocking Google Fonts: loads async, swaps in when ready -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" /></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="description" content="TrackBook — Subscription fee management for gyms and tiffin services" />
+    <meta name="theme-color" content="#e76f51" />
+    <meta name="description" content="TrackBook — Subscription fee management for tiffin services" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="TrackBook" />
     <title>TrackBook — Fee Management</title>
+    <!-- Inline critical CSS for instant loading screen (before any JS loads) -->
+    <style>
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background: radial-gradient(circle at top left, rgba(244,162,97,0.14), transparent 28%),
+                    radial-gradient(circle at top right, rgba(231,111,81,0.08), transparent 22%),
+                    linear-gradient(180deg, #fffaf4, #fffbf5 42%, #f7efe5);
+        font-family: system-ui, -apple-system, sans-serif;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #app-loader.fade-out { opacity: 0; pointer-events: none; }
+      .loader-logo {
+        width: 56px; height: 56px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f4a261, #e76f51);
+        box-shadow: 0 14px 28px rgba(231,111,81,0.22);
+      }
+      .loader-logo svg { width: 28px; height: 28px; color: #fffaf4; }
+      .loader-spinner {
+        width: 22px; height: 22px;
+        border: 2.5px solid rgba(231,111,81,0.18);
+        border-top-color: #e76f51;
+        border-radius: 50%;
+        animation: lspin 0.7s linear infinite;
+      }
+      .loader-text {
+        font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #c45135, #e76f51, #f4a261);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      @keyframes lspin { to { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
+    <!-- Instant loading screen (visible before any JS executes) -->
+    <div id="app-loader">
+      <div class="loader-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="loader-spinner"></div>
+      <div class="loader-text">TrackBook</div>
+    </div>
     <!-- GitHub Pages SPA redirect handler (works with public/404.html) -->
     <script>
       (function(l) {

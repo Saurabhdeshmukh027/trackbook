@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import AppRouter from './router/AppRouter';
@@ -6,6 +6,17 @@ import { Toaster } from 'react-hot-toast';
 import './index.css';
 
 export default function App() {
+  useEffect(() => {
+    const loader = document.getElementById('app-loader');
+    if (loader) {
+      loader.classList.add('fade-out');
+      const timeout = setTimeout(() => {
+        loader.remove();
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, []);
+
   return (
     <LanguageProvider>
       <AuthProvider>

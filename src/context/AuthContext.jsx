@@ -15,11 +15,27 @@ export const AuthProvider = ({ children }) => {
   const userRef = useRef(null);
 
   useEffect(() => {
+    // Explicitly check initial session (doesn't rely on event firing)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
+    }).catch(() => {
+      setLoading(false);
+    });
+
+    // Listen for future auth state changes (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       handleSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    // Safety timeout — never hang on loading screen for more than 10 seconds
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 10000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSession = async (session) => {

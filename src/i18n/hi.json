@@ -51,6 +51,7 @@
     "dueList": "बकाया सूची",
     "payments": "भुगतान",
     "mealPause": "भोजन विराम",
+    "expenses": "खर्च",
     "settings": "सेटिंग्स",
     "home": "होम"
   },
@@ -62,6 +63,8 @@
     "overdueCustomers": "अतिदेय ग्राहक",
     "pendingCollection": "बकाया वसूली",
     "thisMonth": "इस महीने",
+    "monthlyExpenses": "मासिक खर्च",
+    "totalBalance": "कुल शेष",
     "todaysCollection": "आज की वसूली",
     "paymentsReceived": "आज {count} भुगतान प्राप्त",
     "pausedCustomers": "विराम ग्राहक",
@@ -96,7 +99,10 @@
     "dueDate": "बकाया तारीख",
     "recordPayment": "भुगतान दर्ज करें",
     "call": "कॉल करें",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "quickRenew": "त्वरित नवीनीकरण",
+    "confirmQuickRenew": "क्या आप {name} के लिए त्वरित नवीनीकरण की पुष्टि करते हैं? इससे {amount} का भुगतान दर्ज होगा और उनकी सदस्यता फिर से शुरू होगी।",
+    "quickRenewSuccess": "{name} के लिए सदस्यता सफलतापूर्वक फिर से शुरू हो गई!"
   },
 
   "addCustomer": {
@@ -475,5 +481,41 @@
     "quickCollectRenew": "त्वरित वसूली और नवीनीकरण",
     "quickPartial": "त्वरित आंशिक भुगतान",
     "enterValidAmount": "एक मान्य राशि दर्ज करें"
+  },
+
+  "expenses": {
+    "title": "खर्च",
+    "subtitle": "व्यापार के खर्चों को प्रबंधित करें",
+    "totalExpenses": "कुल खर्च",
+    "addExpense": "खर्च जोड़ें",
+    "editExpense": "खर्च संपादित करें",
+    "expenseTitle": "खर्च का विवरण",
+    "amount": "राशि (₹)",
+    "category": "श्रेणी",
+    "date": "तारीख",
+    "note": "टिप्पणी (वैकल्पिक)",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "confirmDelete": "खर्च हटाएं?",
+    "deleteConfirmMsg": "क्या आप वाकई इस खर्च को हटाना चाहते हैं?",
+    "successAdd": "खर्च सफलतापूर्वक जोड़ा गया",
+    "successUpdate": "खर्च सफलतापूर्वक अपडेट किया गया",
+    "successDelete": "खर्च सफलतापूर्वक हटा दिया गया",
+    "failedOperation": "ऑपरेशन विफल रहा",
+    "noExpenses": "इस महीने कोई खर्च दर्ज नहीं है।",
+    "selectMonth": "महीना चुनें",
+    "titlePlaceholder": "जैसे, किराना, किराया, गैस",
+    "notePlaceholder": "जैसे, विक्रेता को भुगतान किया गया",
+    "categories": {
+      "rent": "किराया",
+      "salary": "वेतन/पगार",
+      "groceries": "किराना/सामान",
+      "gas": "गैस/ईंधन",
+      "transport": "परिवहन/किराया",
+      "utilities": "उपयोगिताएं (बिजली/पानी)",
+      "maintenance": "रखरखाव",
+      "other": "अन्य"
+    }
   }
 }

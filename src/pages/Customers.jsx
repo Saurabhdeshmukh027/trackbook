@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronRight, CreditCard, Download, Edit3, MessageCircle, Phone, Search, UserPlus, X } from 'lucide-react';
+import { ChevronRight, CreditCard, Download, Edit3, MessageCircle, Phone, RotateCcw, Search, UserPlus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { subscribeToCustomers } from '../supabase/db';
-import { formatCurrency, formatDate, getCustomerStatus, getMealPlanLabel } from '../utils/subscriptionUtils';
+import { subscribeToCustomers, addPayment, updateCustomer } from '../supabase/db';
+import { formatCurrency, formatDate, getCustomerStatus, getMealPlanLabel, buildQuickRestartData } from '../utils/subscriptionUtils';
 import { sendPaymentReminder } from '../utils/whatsapp';
 import BusinessShell from '../components/BusinessShell';
 import MemberAvatar from '../components/MemberAvatar';
@@ -25,6 +25,35 @@ export default function Customers() {
   const [filter, setFilter] = useState(searchParams.get('filter') || 'all');
   const [loading, setLoading] = useState(true);
   const isSuspended = business?.status === 'suspended';
+  const [renewLoading, setRenewLoading] = useState(null);
+
+  const handleQuickRenew = async (customer) => {
+    const confirmMsg = t('customers.confirmQuickRenew', { 
+      name: customer.name, 
+      amount: formatCurrency(customer.subscription_amount) 
+    });
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setRenewLoading(customer.id);
+    try {
+      await addPayment(business.id, customer.id, {
+        amount: customer.subscription_amount || 0,
+        payment_mode: 'cash',
+        note: 'Quick Restart (One-click)',
+      });
+
+      const renewalData = buildQuickRestartData(customer);
+      await updateCustomer(business.id, customer.id, renewalData);
+
+      const successMsg = t('customers.quickRenewSuccess', { name: customer.name });
+      toast.success(`✅ ${successMsg}`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setRenewLoading(null);
+    }
+  };
 
   const FILTER_LABELS = {
     all: t('common.all'),
@@ -34,7 +63,14 @@ export default function Customers() {
 
   useEffect(() => {
     if (searchParams.get('search')) {
-      setTimeout(() => document.getElementById('customer-search')?.focus(), 100);
+      setFilter('all');
+      setTimeout(() => {
+        const el = document.getElementById('customer-search');
+        if (el) {
+          el.focus();
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     }
   }, [searchParams]);
 
@@ -211,6 +247,18 @@ export default function Customers() {
                             style={{ width: 44, height: 44, padding: 0, flexShrink: 0 }} title={t('common.edit')}>
                             <Edit3 className="h-4 w-4" />
                           </button>
+                          {(status === 'expired' || status === 'overdue' || status === 'due') && (
+                            <button className="btn-soft" onClick={() => handleQuickRenew(customer)}
+                              style={{ width: 44, height: 44, padding: 0, flexShrink: 0, color: 'var(--accent-primary-dark)' }} 
+                              title={t('customers.quickRenew')}
+                              disabled={renewLoading === customer.id}>
+                              {renewLoading === customer.id ? (
+                                <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto" />
+                              ) : (
+                                <RotateCcw className="h-4 w-4" />
+                              )}
+                            </button>
+                          )}
                           <button className="btn-soft" onClick={() => navigate(`/customers/${customer.id}/pay`)}
                             style={{ width: 44, height: 44, padding: 0, flexShrink: 0 }} title={t('customers.recordPayment')}>
                             <CreditCard className="h-4 w-4" />

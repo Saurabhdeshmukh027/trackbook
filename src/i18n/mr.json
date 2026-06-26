@@ -51,6 +51,7 @@
     "dueList": "देय यादी",
     "payments": "पेमेंट",
     "mealPause": "जेवण विश्रांती",
+    "expenses": "खर्च",
     "settings": "सेटिंग्ज",
     "home": "होम"
   },
@@ -62,6 +63,8 @@
     "overdueCustomers": "थकबाकी ग्राहक",
     "pendingCollection": "प्रलंबित वसुली",
     "thisMonth": "या महिन्यात",
+    "monthlyExpenses": "मासिक खर्च",
+    "totalBalance": "एकूण शिल्लक",
     "todaysCollection": "आजची वसुली",
     "paymentsReceived": "आज {count} पेमेंट आले",
     "pausedCustomers": "विश्रांती ग्राहक",
@@ -96,7 +99,10 @@
     "dueDate": "देय तारीख",
     "recordPayment": "पेमेंट नोंदवा",
     "call": "कॉल करा",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "quickRenew": "त्वरित नूतनीकरण",
+    "confirmQuickRenew": "आपण {name} साठी त्वरित नूतनीकरणाची पुष्टी करता का? यामुळे {amount} चे पेमेंट नोंदवले जाईल आणि त्यांची सदस्यता पुन्हा सुरू होईल.",
+    "quickRenewSuccess": "{name} साठी सदस्यता यशस्वीरित्या पुन्हा सुरू झाली!"
   },
 
   "addCustomer": {
@@ -475,5 +481,41 @@
     "quickCollectRenew": "त्वरित वसुली आणि नवीनीकरण",
     "quickPartial": "त्वरित अंशिक पेमेंट",
     "enterValidAmount": "वैध रक्कम टाका"
+  },
+
+  "expenses": {
+    "title": "खर्च",
+    "subtitle": "व्यवसाय खर्च व्यवस्थापित करा",
+    "totalExpenses": "एकूण खर्च",
+    "addExpense": "खर्च जोडा",
+    "editExpense": "खर्च संपादित करा",
+    "expenseTitle": "खर्चाचा तपशील",
+    "amount": "रक्कम (₹)",
+    "category": "वर्ग/श्रेणी",
+    "date": "तारीख",
+    "note": "टीप (पर्यायी)",
+    "save": "जतन करा",
+    "cancel": "रद्द करा",
+    "delete": "हटवा",
+    "confirmDelete": "खर्च हटवायचा?",
+    "deleteConfirmMsg": "तुम्हाला नक्की हा खर्च हटवायचा आहे का?",
+    "successAdd": "खर्च यशस्वीरित्या जोडला गेला",
+    "successUpdate": "खर्च यशस्वीरित्या अद्ययावत केला",
+    "successDelete": "खर्च यशस्वीरित्या हटवला",
+    "failedOperation": "क्रिया अपयशी ठरली",
+    "noExpenses": "या महिन्यासाठी कोणतेही खर्च नोंदवलेले नाहीत.",
+    "selectMonth": "महिना निवडा",
+    "titlePlaceholder": "उदा. किराणा, भाडे, गॅस",
+    "notePlaceholder": "उदा. विक्रेत्याला दिलेले पैसे",
+    "categories": {
+      "rent": "भाडे",
+      "salary": "पगार",
+      "groceries": "किराणा",
+      "gas": "गॅस/इंधन",
+      "transport": "वाहतूक",
+      "utilities": "वीज/पाणी बिल",
+      "maintenance": "देखभाल व दुरुस्ती",
+      "other": "इतर"
+    }
   }
 }

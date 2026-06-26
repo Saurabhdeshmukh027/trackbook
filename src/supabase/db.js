@@ -461,3 +461,83 @@ export const getSnoozedCustomerIds = async (businessId) => {
   if (error) return new Set();
   return new Set((data || []).map((f) => f.customer_id));
 };
+
+// ─── Expenses ───────────────────────────────────────────────────────────────
+
+export const addExpense = async (businessId, data) => {
+  const { error } = await supabase.from('expenses').insert({
+    business_id: businessId,
+    title: data.title || '',
+    amount: data.amount || 0,
+    category: data.category || 'other',
+    date: data.date || serverTimestamp(),
+    note: data.note || '',
+  });
+  if (error) throw error;
+};
+
+export const updateExpense = async (businessId, expenseId, data) => {
+  const { error } = await supabase
+    .from('expenses')
+    .update({
+      title: data.title,
+      amount: data.amount,
+      category: data.category,
+      date: data.date,
+      note: data.note,
+    })
+    .eq('id', expenseId)
+    .eq('business_id', businessId);
+  if (error) throw error;
+};
+
+export const deleteExpense = async (businessId, expenseId) => {
+  const { error } = await supabase
+    .from('expenses')
+    .delete()
+    .eq('id', expenseId)
+    .eq('business_id', businessId);
+  if (error) throw error;
+};
+
+export const getExpensesByBusiness = async (businessId) => {
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('*')
+    .eq('business_id', businessId)
+    .order('date', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const subscribeToExpenses = (businessId, callback) => {
+  let unsubscribed = false;
+
+  const fetchAndNotify = async () => {
+    try {
+      const data = await getExpensesByBusiness(businessId);
+      if (!unsubscribed) callback(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchAndNotify();
+
+  const channel = supabase
+    .channel(`public:expenses:business_id=eq.${businessId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'expenses',
+      filter: `business_id=eq.${businessId}`,
+    }, fetchAndNotify)
+    .subscribe();
+
+  return () => {
+    unsubscribed = true;
+    supabase.removeChannel(channel);
+  };
+};
+
