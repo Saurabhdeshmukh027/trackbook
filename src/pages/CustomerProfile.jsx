@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Calendar, CreditCard, Edit3, MessageCircle, PauseCircle, Phone, RotateCcw, Trash2 } from 'lucide-react';
+import { Calendar, CreditCard, Edit3, MessageCircle, Package, PauseCircle, Phone, RotateCcw, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { subscribeToCustomer, deleteCustomer, getPaymentsByCustomer, getAllMealPauses, addPayment, updateCustomer } from '../supabase/db';
+import { subscribeToCustomer, deleteCustomer, getPaymentsByCustomer, getAllMealPauses, addPayment, updateCustomer, getCollectionsByCustomer } from '../supabase/db';
 import { formatCurrency, formatDate, getCustomerStatus, getMealPlanLabel, buildQuickRestartData } from '../utils/subscriptionUtils';
 import { sendDueReminder, sendPaymentReminder } from '../utils/whatsapp';
 import BusinessShell from '../components/BusinessShell';
@@ -20,6 +20,7 @@ export default function CustomerProfile() {
   const [customer, setCustomer] = useState(null);
   const [payments, setPayments] = useState([]);
   const [pauses, setPauses] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isSuspended = business?.status === 'suspended';
@@ -64,12 +65,14 @@ export default function CustomerProfile() {
     const unsub = subscribeToCustomer(business.id, id, setCustomer);
 
     (async () => {
-      const [pay, pause] = await Promise.all([
+      const [pay, pause, cols] = await Promise.all([
         getPaymentsByCustomer(business.id, id),
         getAllMealPauses(business.id, id),
+        getCollectionsByCustomer(business.id, id),
       ]);
       setPayments(pay);
       setPauses(pause);
+      setCollections(cols);
     })();
 
     return unsub;
@@ -134,6 +137,9 @@ export default function CustomerProfile() {
                 <button className="btn-primary" style={{ width: 'auto', flex: 'none' }} onClick={() => navigate(`/customers/${id}/pay`)}>
                   <CreditCard className="h-4 w-4" /> {t('customers.recordPayment')}
                 </button>
+                <button className="btn-soft" style={{ width: 'auto', flex: 'none' }} onClick={() => navigate(`/customers/${id}/collections`)}>
+                  <Package className="h-4 w-4" /> Collections
+                </button>
                 {customer.mobile && (
                   <a className="btn-soft" href={`tel:${customer.mobile}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <Phone className="h-4 w-4" /> {t('customers.call')}
@@ -195,6 +201,66 @@ export default function CustomerProfile() {
                     <p className="text-xs" style={{ color: 'var(--text-soft)' }}>{formatDate(p.date)} · {p.payment_mode}</p>
                   </div>
                   {p.note && <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{p.note}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Collections Summary */}
+        <section className="card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <p className="section-title">Collections</p>
+              {collections.filter((c) => !c.paid).length > 0 && (
+                <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: 'rgba(201, 75, 75, 0.12)', color: 'var(--accent-danger)' }}>
+                  {collections.filter((c) => !c.paid).length} pending
+                </span>
+              )}
+            </div>
+            <button className="btn-ghost" onClick={() => navigate(`/customers/${id}/collections`)}>
+              <Package className="h-4 w-4" /> Manage
+            </button>
+          </div>
+
+          {/* Pending total banner */}
+          {collections.filter((c) => !c.paid).length > 0 && (
+            <div className="mt-3 flex items-center justify-between rounded-[16px] border px-4 py-3"
+              style={{ borderColor: 'rgba(201, 75, 75, 0.22)', background: 'rgba(201, 75, 75, 0.05)' }}>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-soft)' }}>Pending to collect</span>
+              <span className="text-lg font-extrabold" style={{ color: 'var(--accent-danger)' }}>
+                {formatCurrency(collections.filter((c) => !c.paid).reduce((s, c) => s + Number(c.amount), 0))}
+              </span>
+            </div>
+          )}
+
+          {collections.length === 0 ? (
+            <p className="mt-4 text-sm" style={{ color: 'var(--text-soft)' }}>No collections yet. Add parcel or extra meal charges.</p>
+          ) : (
+            <div className="mt-4 space-y-2">
+              {collections.slice(0, 4).map((c) => (
+                <div key={c.id} className="flex items-center justify-between rounded-[16px] border px-4 py-3"
+                  style={{
+                    borderColor: c.paid ? 'rgba(42, 143, 121, 0.18)' : 'var(--border-soft)',
+                    background: c.paid ? 'rgba(42, 143, 121, 0.04)' : 'transparent',
+                  }}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-base">
+                      {c.item === 'Parcel' ? '📦' : c.item === 'Extra Meal' ? '🍛' : c.item === 'Special Item' ? '🛍️' : '✏️'}
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold" style={{ color: 'var(--text-main)' }}>{c.item}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-soft)' }}>{c.qty} × {formatCurrency(c.rate)} · {formatDate(c.date)}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-extrabold" style={{ color: c.paid ? 'var(--accent-tertiary)' : 'var(--text-main)' }}>
+                      {formatCurrency(c.amount)}
+                    </p>
+                    <span className={c.paid ? 'badge-success text-[10px]' : 'badge-warning text-[10px]'}>
+                      {c.paid ? 'Collected' : 'Pending'}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

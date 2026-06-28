@@ -2,18 +2,58 @@ import { supabase } from './config';
 
 // ─── Photo Upload ───────────────────────────────────────────────────────────
 
+/**
+ * Compress an image File before uploading to reduce size.
+ */
+const compressImageForUpload = (file) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        const maxDim = 800;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = (height / width) * maxDim; width = maxDim; }
+          else { width = (width / height) * maxDim; height = maxDim; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => resolve(new File([blob], 'photo.jpg', { type: 'image/jpeg' })),
+          'image/jpeg',
+          0.82
+        );
+      };
+      const dataUrl = e.target.result;
+      if (typeof dataUrl === 'string' && dataUrl.startsWith('data:image/')) {
+        img.src = dataUrl;
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export const uploadCustomerPhoto = async (businessId, file) => {
-  const ext = file.name.split('.').pop();
-  const fileName = `${businessId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  // Always compress + convert to JPEG before upload
+  const compressed = await compressImageForUpload(file);
+  const fileName = `${businessId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
 
   const { error } = await supabase.storage
     .from('customer-photos')
-    .upload(fileName, file, {
+    .upload(fileName, compressed, {
       cacheControl: '3600',
-      upsert: false,
+      upsert: true,
+      contentType: 'image/jpeg',
     });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Supabase storage upload error:', error);
+    throw error;
+  }
 
   const { data } = supabase.storage
     .from('customer-photos')
@@ -541,3 +581,70 @@ export const subscribeToExpenses = (businessId, callback) => {
   };
 };
 
+// ─── Collections ─────────────────────────────────────────────────────────────
+
+export const addCollection = async (businessId, customerId, data) => {
+  const qty = Number(data.qty) || 1;
+  const rate = Number(data.rate) || 0;
+  const amount = qty * rate;
+
+  const { error } = await supabase.from('collections').insert({
+    business_id: businessId,
+    customer_id: customerId,
+    item: data.item || 'Parcel',
+    qty,
+    rate,
+    amount,
+    paid: false,
+    payment_mode: 'cash',
+    date: data.date || serverTimestamp(),
+    note: data.note || '',
+    created_at: serverTimestamp(),
+  });
+  if (error) throw error;
+};
+
+export const getCollectionsByCustomer = async (businessId, customerId) => {
+  const { data, error } = await supabase
+    .from('collections')
+    .select('*')
+    .eq('business_id', businessId)
+    .eq('customer_id', customerId)
+    .order('date', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const getCollectionsByBusiness = async (businessId) => {
+  const { data, error } = await supabase
+    .from('collections')
+    .select('*, customers(name, mobile)')
+    .eq('business_id', businessId)
+    .order('date', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
+
+export const collectCollectionPayment = async (businessId, collectionId, paymentMode) => {
+  const { error } = await supabase
+    .from('collections')
+    .update({
+      paid: true,
+      paid_at: serverTimestamp(),
+      payment_mode: paymentMode || 'cash',
+    })
+    .eq('id', collectionId)
+    .eq('business_id', businessId);
+  if (error) throw error;
+};
+
+export const deleteCollection = async (businessId, collectionId) => {
+  const { error } = await supabase
+    .from('collections')
+    .delete()
+    .eq('id', collectionId)
+    .eq('business_id', businessId);
+  if (error) throw error;
+};
