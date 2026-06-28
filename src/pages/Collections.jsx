@@ -345,134 +345,7 @@ export default function Collections() {
           )}
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-
-          {/* ── Collection List ─────────────────────────────────────────────── */}
-          <div className="space-y-4">
-            {/* Filter tabs */}
-            <div className="flex gap-2">
-              {[
-                { key: 'all', label: 'All' },
-                { key: 'pending', label: 'Pending' },
-                { key: 'paid', label: 'Collected' },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={filter === key ? 'btn-soft' : 'btn-ghost'}
-                  style={filter === key ? {
-                    background: 'linear-gradient(135deg, rgba(244, 162, 97, 0.24), rgba(231, 111, 81, 0.18))',
-                    color: 'var(--accent-primary-dark)', border: '1px solid rgba(231, 111, 81, 0.2)',
-                  } : undefined}
-                  onClick={() => setFilter(key)}
-                >
-                  {label}
-                  {key === 'pending' && pendingTotal > 0 && (
-                    <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold"
-                      style={{ background: 'rgba(201, 75, 75, 0.15)', color: 'var(--accent-danger)' }}>
-                      {collections.filter((c) => !c.paid).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Entries */}
-            <div className="card space-y-3">
-              <p className="section-title">
-                {filter === 'all' ? 'All Collections' : filter === 'pending' ? 'Pending Collections' : 'Collected'}
-              </p>
-
-              {filtered.length === 0 ? (
-                <div className="py-10 text-center">
-                  <BadgeIndianRupee className="mx-auto h-10 w-10 mb-3" style={{ color: 'var(--text-faint)' }} />
-                  <p className="text-sm" style={{ color: 'var(--text-soft)' }}>
-                    {filter === 'pending' ? 'No pending collections' : filter === 'paid' ? 'No collected items yet' : 'No collections yet'}
-                  </p>
-                  <p className="mt-1 text-xs" style={{ color: 'var(--text-faint)' }}>Add a parcel, extra meal, or guest charge using the form</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {filtered.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between rounded-[18px] border px-4 py-3 gap-3"
-                      style={{
-                        borderColor: c.paid ? 'rgba(42, 143, 121, 0.18)' : 'var(--border-soft)',
-                        background: c.paid ? 'rgba(42, 143, 121, 0.04)' : 'transparent',
-                      }}
-                    >
-                      {/* Left */}
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[12px] text-base"
-                          style={{ background: c.paid ? 'rgba(42, 143, 121, 0.12)' : 'rgba(244, 162, 97, 0.12)' }}>
-                          {c.item === 'Parcel' ? '📦' : c.item === 'Extra Meal' ? '🍛' : c.item === 'One-time Meal' ? '🍽️' : c.item === 'Special Item' ? '🛍️' : '✏️'}
-                        </div>
-                        <div className="min-w-0">
-                          {/* Item header with customer badge/link */}
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                            <span className="text-sm font-bold truncate" style={{ color: 'var(--text-main)' }}>{c.item}</span>
-                            {c.customers ? (
-                              <Link 
-                                to={`/customers/${c.customer_id}`} 
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full hover:underline"
-                                style={{ background: 'rgba(244, 162, 97, 0.10)', color: 'var(--accent-primary-dark)' }}
-                              >
-                                {c.customers.name}
-                              </Link>
-                            ) : (
-                              <span 
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                                style={{ background: 'rgba(155, 136, 120, 0.12)', color: 'var(--text-soft)' }}
-                              >
-                                Guest / Walk-in
-                              </span>
-                            )}
-                          </div>
-                          
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-soft)' }}>
-                            {c.qty} × {formatCurrency(c.rate)} · {formatDate(c.date)}
-                          </p>
-                          {c.note && <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{c.note}</p>}
-                        </div>
-                      </div>
-
-                      {/* Right */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="text-right">
-                          <p className="text-sm font-extrabold" style={{ color: c.paid ? 'var(--accent-tertiary)' : 'var(--text-main)' }}>
-                            {formatCurrency(c.amount)}
-                          </p>
-                          {c.paid ? (
-                            <span className="badge-success text-[10px]">Collected</span>
-                          ) : (
-                            <button
-                              type="button"
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5"
-                              style={{ background: 'rgba(42, 143, 121, 0.12)', color: 'var(--accent-tertiary)' }}
-                              onClick={() => setPayModal(c)}
-                            >
-                              Collect ₹
-                            </button>
-                          )}
-                        </div>
-                        {!c.paid && (
-                          <button
-                            type="button"
-                            className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-red-50"
-                            style={{ color: 'var(--accent-danger)' }}
-                            onClick={() => setDeleteTarget(c)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
 
           {/* ── Add Form ─────────────────────────────────────────────────────── */}
           <form onSubmit={handleAdd} className="card space-y-5 h-fit">
@@ -648,6 +521,134 @@ export default function Collections() {
               {loading ? 'Adding…' : 'Record Charge'}
             </button>
           </form>
+
+          {/* ── Collection List ─────────────────────────────────────────────── */}
+          <div className="space-y-4">
+            {/* Filter tabs */}
+            <div className="flex gap-2">
+              {[
+                { key: 'all', label: 'All' },
+                { key: 'pending', label: 'Pending' },
+                { key: 'paid', label: 'Collected' },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={filter === key ? 'btn-soft' : 'btn-ghost'}
+                  style={filter === key ? {
+                    background: 'linear-gradient(135deg, rgba(244, 162, 97, 0.24), rgba(231, 111, 81, 0.18))',
+                    color: 'var(--accent-primary-dark)', border: '1px solid rgba(231, 111, 81, 0.2)',
+                  } : undefined}
+                  onClick={() => setFilter(key)}
+                >
+                  {label}
+                  {key === 'pending' && pendingTotal > 0 && (
+                    <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                      style={{ background: 'rgba(201, 75, 75, 0.15)', color: 'var(--accent-danger)' }}>
+                      {collections.filter((c) => !c.paid).length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Entries */}
+            <div className="card space-y-3">
+              <p className="section-title">
+                {filter === 'all' ? 'All Collections' : filter === 'pending' ? 'Pending Collections' : 'Collected'}
+              </p>
+
+              {filtered.length === 0 ? (
+                <div className="py-10 text-center">
+                  <BadgeIndianRupee className="mx-auto h-10 w-10 mb-3" style={{ color: 'var(--text-faint)' }} />
+                  <p className="text-sm" style={{ color: 'var(--text-soft)' }}>
+                    {filter === 'pending' ? 'No pending collections' : filter === 'paid' ? 'No collected items yet' : 'No collections yet'}
+                  </p>
+                  <p className="mt-1 text-xs" style={{ color: 'var(--text-faint)' }}>Add a parcel, extra meal, or guest charge using the form</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filtered.map((c) => (
+                    <div
+                      key={c.id}
+                      className="flex items-center justify-between rounded-[18px] border px-4 py-3 gap-3"
+                      style={{
+                        borderColor: c.paid ? 'rgba(42, 143, 121, 0.18)' : 'var(--border-soft)',
+                        background: c.paid ? 'rgba(42, 143, 121, 0.04)' : 'transparent',
+                      }}
+                    >
+                      {/* Left */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[12px] text-base"
+                          style={{ background: c.paid ? 'rgba(42, 143, 121, 0.12)' : 'rgba(244, 162, 97, 0.12)' }}>
+                          {c.item === 'Parcel' ? '📦' : c.item === 'Extra Meal' ? '🍛' : c.item === 'One-time Meal' ? '🍽️' : c.item === 'Special Item' ? '🛍️' : '✏️'}
+                        </div>
+                        <div className="min-w-0">
+                          {/* Item header with customer badge/link */}
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                            <span className="text-sm font-bold truncate" style={{ color: 'var(--text-main)' }}>{c.item}</span>
+                            {c.customers ? (
+                              <Link 
+                                to={`/customers/${c.customer_id}`} 
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full hover:underline"
+                                style={{ background: 'rgba(244, 162, 97, 0.10)', color: 'var(--accent-primary-dark)' }}
+                              >
+                                {c.customers.name}
+                              </Link>
+                            ) : (
+                              <span 
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                style={{ background: 'rgba(155, 136, 120, 0.12)', color: 'var(--text-soft)' }}
+                              >
+                                Guest / Walk-in
+                              </span>
+                            )}
+                          </div>
+                          
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-soft)' }}>
+                            {c.qty} × {formatCurrency(c.rate)} · {formatDate(c.date)}
+                          </p>
+                          {c.note && <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-faint)' }}>{c.note}</p>}
+                        </div>
+                      </div>
+
+                      {/* Right */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="text-right">
+                          <p className="text-sm font-extrabold" style={{ color: c.paid ? 'var(--accent-tertiary)' : 'var(--text-main)' }}>
+                            {formatCurrency(c.amount)}
+                          </p>
+                          {c.paid ? (
+                            <span className="badge-success text-[10px]">Collected</span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5"
+                              style={{ background: 'rgba(42, 143, 121, 0.12)', color: 'var(--accent-tertiary)' }}
+                              onClick={() => setPayModal(c)}
+                            >
+                              Collect ₹
+                            </button>
+                          )}
+                        </div>
+                        {!c.paid && (
+                          <button
+                            type="button"
+                            className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-red-50"
+                            style={{ color: 'var(--accent-danger)' }}
+                            onClick={() => setDeleteTarget(c)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
         </section>
       </div>
 
