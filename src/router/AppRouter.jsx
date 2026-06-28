@@ -109,6 +109,7 @@ export default function AppRouter() {
           <Route path="/customers/:id/payments" element={<BusinessRoute><PaymentHistory /></BusinessRoute>} />
           <Route path="/customers/:id/meal-pause" element={<BusinessRoute><MealPauseCustomer /></BusinessRoute>} />
           <Route path="/customers/:id/collections" element={<BusinessRoute><Collections /></BusinessRoute>} />
+          <Route path="/collections" element={<BusinessRoute><Collections /></BusinessRoute>} />
           <Route path="/meal-pause" element={<BusinessRoute><MealPause /></BusinessRoute>} />
           <Route path="/expenses" element={<BusinessRoute><Expenses /></BusinessRoute>} />
           <Route path="/settings" element={<BusinessRoute><Settings /></BusinessRoute>} />

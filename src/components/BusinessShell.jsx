@@ -10,6 +10,7 @@ import {
   UserPlus,
   Users,
   Wallet,
+  Package,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -20,7 +21,10 @@ import toast from 'react-hot-toast';
 
 function matchesPath(pathname, to) {
   if (to === '/customers') {
-    return pathname === '/customers' || pathname.startsWith('/customers/');
+    return (pathname === '/customers' || pathname.startsWith('/customers/')) && !pathname.includes('/collections');
+  }
+  if (to === '/collections') {
+    return pathname === '/collections' || pathname.includes('/collections');
   }
   return pathname === to;
 }
@@ -43,6 +47,7 @@ export default function BusinessShell({
     { to: '/customers', icon: Users, label: t('nav.customers') },
     { to: '/meal-pause', icon: PauseCircle, label: t('nav.mealPause') },
     { to: '/expenses', icon: Wallet, label: t('nav.expenses') },
+    { to: '/collections', icon: Package, label: t('nav.collections') || 'Collections' },
     { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 

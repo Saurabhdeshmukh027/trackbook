@@ -10,10 +10,11 @@ import {
   UserPlus,
   Users,
   Wallet,
+  Package,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { getPaymentsByBusiness, subscribeToCustomers, subscribeToExpenses, addPayment, updateCustomer } from '../supabase/db';
+import { getPaymentsByBusiness, getCollectionsByBusiness, subscribeToCustomers, subscribeToExpenses, addPayment, updateCustomer } from '../supabase/db';
 import {
   calcDashboardStats,
   calcMonthlyRevenue,
@@ -122,11 +123,26 @@ export default function Dashboard() {
 
     const unsubscribe = subscribeToCustomers(business.id, async (customerList) => {
       try {
-        const payments = await getPaymentsByBusiness(business.id);
+        const [payments, collections] = await Promise.all([
+          getPaymentsByBusiness(business.id),
+          getCollectionsByBusiness(business.id),
+        ]);
 
-        const dashboardStats = calcDashboardStats(customerList, payments);
-        const revenue = calcMonthlyRevenue(payments, 6);
-        const today = calcTodayStats(payments);
+        // Map paid collections to look like payment records for stats calculation
+        const paidCollections = collections
+          .filter((c) => c.paid)
+          .map((c) => ({
+            ...c,
+            amount: Number(c.amount),
+            date: c.paid_at || c.date || c.created_at,
+          }));
+
+        // Combine regular tiffin payments with extra collections (parcel, guest meals)
+        const allTransactions = [...payments, ...paidCollections];
+
+        const dashboardStats = calcDashboardStats(customerList, allTransactions);
+        const revenue = calcMonthlyRevenue(allTransactions, 6);
+        const today = calcTodayStats(allTransactions);
 
         setCustomers(customerList);
         setStats(dashboardStats);
@@ -159,10 +175,16 @@ export default function Dashboard() {
         date: new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
       })}
       actions={
-        <button className="btn-soft hidden md:inline-flex" onClick={() => navigate('/customers/add')}>
-          <UserPlus className="h-4 w-4" />
-          {t('common.addCustomer')}
-        </button>
+        <div className="flex gap-2">
+          <button className="btn-soft" onClick={() => navigate('/collections')}>
+            <Package className="h-4 w-4" />
+            {t('nav.collections') || 'Collections'}
+          </button>
+          <button className="btn-soft hidden sm:inline-flex" onClick={() => navigate('/customers/add')}>
+            <UserPlus className="h-4 w-4" />
+            {t('common.addCustomer')}
+          </button>
+        </div>
       }
     >
       <div className="space-y-8">

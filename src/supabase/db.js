@@ -587,6 +587,7 @@ export const addCollection = async (businessId, customerId, data) => {
   const qty = Number(data.qty) || 1;
   const rate = Number(data.rate) || 0;
   const amount = qty * rate;
+  const paid = data.paid !== undefined ? data.paid : true;
 
   const { error } = await supabase.from('collections').insert({
     business_id: businessId,
@@ -595,8 +596,9 @@ export const addCollection = async (businessId, customerId, data) => {
     qty,
     rate,
     amount,
-    paid: false,
-    payment_mode: 'cash',
+    paid,
+    paid_at: paid ? serverTimestamp() : null,
+    payment_mode: data.payment_mode || 'cash',
     date: data.date || serverTimestamp(),
     note: data.note || '',
     created_at: serverTimestamp(),
