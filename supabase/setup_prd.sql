@@ -62,9 +62,7 @@ create table public.customers (
     check (amount_due >= 0),
   status               text not null default 'active'
     check (status in ('active', 'due', 'overdue')),
-  created_at           timestamptz not null default now(),
-  -- No duplicate mobile per business
-  unique (business_id, mobile)
+  created_at           timestamptz not null default now()
 );
 
 -- ── payments ────────────────────────────────────────────────────────────────
@@ -102,6 +100,7 @@ create table public.meal_pause (
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 
 create index idx_customers_business on public.customers(business_id);
+create unique index idx_customers_unique_mobile on public.customers(business_id, mobile) where mobile != '';
 create index idx_customers_status on public.customers(status);
 create index idx_payments_business on public.payments(business_id);
 create index idx_payments_customer on public.payments(customer_id);

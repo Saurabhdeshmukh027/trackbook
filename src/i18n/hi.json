@@ -84,7 +84,10 @@
     "monthlyCollection": "मासिक वसूली",
     "lastMonths": "पिछले 6 महीने · लक्ष्य का {percent}%",
     "expiringSoon": "जल्द समाप्त",
-    "subscriptionsEnding": "अगले 7 दिनों में समाप्त होने वाली सदस्यताएं"
+    "subscriptionsEnding": "अगले 7 दिनों में समाप्त होने वाली सदस्यताएं",
+    "expiredCustomers": "समाप्त ग्राहक",
+    "monthEnded": "ग्राहक समाप्त",
+    "allSubscriptionsActive": "सभी ग्राहक सदस्यताएं सक्रिय हैं।"
   },
 
   "customers": {

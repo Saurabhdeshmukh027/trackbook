@@ -84,7 +84,10 @@
     "monthlyCollection": "मासिक वसुली",
     "lastMonths": "गेले 6 महिने · लक्ष्याचे {percent}%",
     "expiringSoon": "लवकरच कालबाह्य",
-    "subscriptionsEnding": "पुढील 7 दिवसांत संपणाऱ्या सदस्यता"
+    "subscriptionsEnding": "पुढील 7 दिवसांत संपणाऱ्या सदस्यता",
+    "expiredCustomers": "कालबाह्य ग्राहक",
+    "monthEnded": "ग्राहक कालबाह्य",
+    "allSubscriptionsActive": "सर्व ग्राहक सदस्यता सक्रिय आहेत."
   },
 
   "customers": {

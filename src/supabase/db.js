@@ -40,10 +40,10 @@ const compressImageForUpload = (file) => {
 export const uploadCustomerPhoto = async (businessId, file) => {
   // Always compress + convert to JPEG before upload
   const compressed = await compressImageForUpload(file);
-  const fileName = `${businessId}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const fileName = `businesses/${businessId}/customers/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
 
   const { error } = await supabase.storage
-    .from('customer-photos')
+    .from('avatars')
     .upload(fileName, compressed, {
       cacheControl: '3600',
       upsert: true,
@@ -56,7 +56,7 @@ export const uploadCustomerPhoto = async (businessId, file) => {
   }
 
   const { data } = supabase.storage
-    .from('customer-photos')
+    .from('avatars')
     .getPublicUrl(fileName);
 
   return data.publicUrl;

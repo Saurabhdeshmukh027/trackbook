@@ -84,7 +84,10 @@
     "monthlyCollection": "Monthly collection",
     "lastMonths": "Last 6 months · {percent}% of target",
     "expiringSoon": "Expiring Soon",
-    "subscriptionsEnding": "Subscriptions ending in the next 7 days"
+    "subscriptionsEnding": "Subscriptions ending in the next 7 days",
+    "expiredCustomers": "Expired Customers",
+    "monthEnded": "Customers Expired",
+    "allSubscriptionsActive": "All customer subscriptions are active."
   },
 
   "customers": {

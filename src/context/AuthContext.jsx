@@ -12,6 +12,8 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const processingRef = useRef(false);
+  const nextSessionRef = useRef(null);
+  const hasNextSessionRef = useRef(false);
   const userRef = useRef(null);
 
   useEffect(() => {
@@ -39,32 +41,47 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleSession = async (session) => {
-    if (processingRef.current) return;
+    if (processingRef.current) {
+      nextSessionRef.current = session;
+      hasNextSessionRef.current = true;
+      return;
+    }
     processingRef.current = true;
 
     try {
-      if (session?.user) {
-        setUser(session.user);
-        userRef.current = session.user;
+      let currentSession = session;
+      while (true) {
+        if (currentSession?.user) {
+          setUser(currentSession.user);
+          userRef.current = currentSession.user;
 
-        // Run admin check and business fetch in parallel for faster init
-        const [adminStatus, biz] = await Promise.all([
-          checkIsAdmin(session.user.id),
-          getBusinessByUserId(session.user.id).catch((error) => {
-            console.error('Failed to fetch business data:', error);
-            return null;
-          }),
-        ]);
+          // Run admin check and business fetch in parallel for faster init
+          const [adminStatus, biz] = await Promise.all([
+            checkIsAdmin(currentSession.user.id),
+            getBusinessByUserId(currentSession.user.id).catch((error) => {
+              console.error('Failed to fetch business data:', error);
+              return null;
+            }),
+          ]);
 
-        setIsAdmin(adminStatus);
-        if (!adminStatus) {
-          setBusiness(biz);
+          setIsAdmin(adminStatus);
+          if (!adminStatus) {
+            setBusiness(biz);
+          }
+        } else {
+          setUser(null);
+          userRef.current = null;
+          setBusiness(null);
+          setIsAdmin(false);
         }
-      } else {
-        setUser(null);
-        userRef.current = null;
-        setBusiness(null);
-        setIsAdmin(false);
+
+        if (hasNextSessionRef.current) {
+          currentSession = nextSessionRef.current;
+          nextSessionRef.current = null;
+          hasNextSessionRef.current = false;
+        } else {
+          break;
+        }
       }
     } finally {
       setLoading(false);
